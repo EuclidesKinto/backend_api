@@ -1,6 +1,7 @@
 package models
 
 import (
+	"backend_api/config"
 	"errors"
 	"strings"
 	"time"
@@ -23,7 +24,9 @@ func (user *User) Prepare(step string) error {
 		return erro
 	}
 
-	user.format()
+	if erro := user.format(step); erro != nil {
+		return erro
+	}
 	return nil
 }
 
@@ -47,8 +50,17 @@ func (user *User) validate(step string) error {
 }
 
 // NewUser creates a new user.
-func (user *User) format() {
+func (user *User) format(step string) error {
 	user.Name = strings.TrimSpace(user.Name)
 	user.Email = strings.TrimSpace(user.Email)
 	user.Password = strings.TrimSpace(user.Password)
+
+	if step == "register" {
+		passwordHash, erro := config.HashPassword(user.Password)
+		if erro != nil {
+			return erro
+		}
+		user.Password = string(passwordHash)
+	}
+	return nil
 }
