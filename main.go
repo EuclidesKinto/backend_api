@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend_api/config"
 	"backend_api/routes"
 	"fmt"
 	"log"
@@ -8,7 +9,9 @@ import (
 )
 
 func main() {
+	config.LoadConfig()
+	fmt.Println("Port:", config.Port)
 	fmt.Println("Server is running in port 8000")
 	r := routes.GenerateRouter()
-	log.Fatal(http.ListenAndServe(":8000", r))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Port), r))
 }
