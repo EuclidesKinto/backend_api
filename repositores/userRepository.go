@@ -54,3 +54,50 @@ func (repository users) GetAll() ([]models.User, error) {
 	}
 	return users, nil
 }
+
+// Busca um usuário pelo ID
+func (repository users) GetByID(ID uint64) (models.User, error) {
+	var user models.User
+	rows, erro := repository.db.Query("SELECT id, name, email FROM users WHERE id = ?", ID)
+	if erro != nil {
+		return models.User{}, erro
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		if erro = rows.Scan(&user.ID, &user.Name, &user.Email); erro != nil {
+			return models.User{}, erro
+		}
+	}
+	return user, nil
+}
+
+// Update um usuário
+func (repository users) Update(ID uint64, user models.User) error {
+	statement, erro := repository.db.Prepare(
+		"UPDATE users SET name = ?, email = ? WHERE id = ?",
+	)
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+
+	if _, erro = statement.Exec(user.Name, user.Email, ID); erro != nil {
+		return erro
+	}
+	return nil
+}
+
+// Delete um usuário
+func (repository users) Delete(ID uint64) error {
+	statement, erro := repository.db.Prepare("DELETE FROM users WHERE id = ?")
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+
+	if _, erro = statement.Exec(ID); erro != nil {
+		return erro
+	}
+	return nil
+}

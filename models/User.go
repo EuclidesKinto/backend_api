@@ -16,8 +16,8 @@ type User struct {
 	UpdatedAt time.Time `json:"updated,omitempty"`
 }
 
-func (user *User) Prepare() error {
-	if erro := user.validate(); erro != nil {
+func (user *User) Prepare(step string) error {
+	if erro := user.validate(step); erro != nil {
 		return erro
 	}
 
@@ -26,14 +26,14 @@ func (user *User) Prepare() error {
 }
 
 // NewUser creates a new user.
-func (user *User) validate() error {
+func (user *User) validate(step string) error {
 	if user.Name == "" {
 		return errors.New("O nome é obrigatório.")
 	}
 	if user.Email == "" {
 		return errors.New("O email é obrigatório.")
 	}
-	if user.Password == "" {
+	if step == "register" && user.Password == "" {
 		return errors.New("A senha é obrigatória.")
 	}
 	return nil

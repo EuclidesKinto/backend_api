@@ -1,12 +1,12 @@
 " mysql -u root -p
-USE kooments;
+USE koomentsdb;
 show databases;
 desc users;
 
 "
 
-CREATE DATABASE IF NOT EXISTS kooments;
-USE kooments;
+CREATE DATABASE IF NOT EXISTS koomentsdb;
+USE koomentsdb;
 
 CREATE TABLE users (
     id INT NOT NULL AUTO_INCREMENT,
