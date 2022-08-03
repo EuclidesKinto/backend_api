@@ -35,3 +35,22 @@ func (repository users) Create(user models.User) (uint64, error) {
 	return uint64(lastIDInserted), nil
 
 }
+
+// Busca todos os usuários
+func (repository users) GetAll() ([]models.User, error) {
+	var users []models.User
+	rows, erro := repository.db.Query("SELECT id, name, email FROM users")
+	if erro != nil {
+		return nil, erro
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var user models.User
+		if erro = rows.Scan(&user.ID, &user.Name, &user.Email); erro != nil {
+			return nil, erro
+		}
+		users = append(users, user)
+	}
+	return users, nil
+}

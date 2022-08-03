@@ -47,7 +47,20 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 // UserAdminController is the controller for the user admin routes
 func GetUsersAll(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Get all users"))
+	db, erro := database.Connect()
+	if erro != nil {
+		messages.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+
+	repository := repositores.NewRepositoryUsers(db)
+	users, erro := repository.GetAll()
+	if erro != nil {
+		messages.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	messages.JSON(w, http.StatusOK, users)
 }
 
 // UserAdminController is the controller for the user admin routes
