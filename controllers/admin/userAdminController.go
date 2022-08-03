@@ -1,10 +1,39 @@
 package controllers
 
-import "net/http"
+import (
+	"backend_api/database"
+	"backend_api/models"
+	"backend_api/repositores"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+)
 
 // UserAdminController is the controller for the user admin routes
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("CreateUser"))
+	bodyRequest, erro := ioutil.ReadAll(r.Body)
+	if erro != nil {
+		log.Fatal(erro)
+	}
+
+	var user models.User
+	if erro = json.Unmarshal(bodyRequest, &user); erro != nil {
+		log.Fatal(erro)
+	}
+
+	db, erro := database.Connect()
+	if erro != nil {
+		log.Fatal(erro)
+	}
+
+	repository := repositores.NewRepositoryUsers(db)
+	userID, erro := repository.Create(user)
+	if erro != nil {
+		log.Fatal(erro)
+	}
+	w.Write([]byte(fmt.Sprintf("User created with ID: %d", userID)))
 }
 
 // UserAdminController is the controller for the user admin routes
