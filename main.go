@@ -10,8 +10,7 @@ import (
 
 func main() {
 	config.LoadConfig()
-	fmt.Println("Port:", config.Port)
-	fmt.Println("Server is running in port 8000")
 	r := routes.GenerateRouter()
+	fmt.Println("Server is running in port :", config.Port)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Port), r))
 }
