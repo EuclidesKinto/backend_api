@@ -2,12 +2,11 @@ package controllers
 
 import (
 	"backend_api/database"
+	messages "backend_api/messages"
 	"backend_api/models"
 	"backend_api/repositores"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
@@ -15,25 +14,30 @@ import (
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	bodyRequest, erro := ioutil.ReadAll(r.Body)
 	if erro != nil {
-		log.Fatal(erro)
+		messages.Erro(w, http.StatusUnprocessableEntity, erro)
+		return
 	}
 
 	var user models.User
 	if erro = json.Unmarshal(bodyRequest, &user); erro != nil {
-		log.Fatal(erro)
+		messages.Erro(w, http.StatusBadRequest, erro)
+		return
 	}
 
 	db, erro := database.Connect()
 	if erro != nil {
-		log.Fatal(erro)
+		messages.Erro(w, http.StatusInternalServerError, erro)
+		return
 	}
+	defer db.Close()
 
 	repository := repositores.NewRepositoryUsers(db)
 	userID, erro := repository.Create(user)
 	if erro != nil {
-		log.Fatal(erro)
+		messages.Erro(w, http.StatusInternalServerError, erro)
+		return
 	}
-	w.Write([]byte(fmt.Sprintf("User created with ID: %d", userID)))
+	messages.JSON(w, http.StatusCreated, userID)
 }
 
 // UserAdminController is the controller for the user admin routes

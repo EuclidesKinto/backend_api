@@ -15,7 +15,7 @@ func NewRepositoryUsers(db *sql.DB) *users {
 }
 
 // Cria um novo usuário
-func (repository *users) Create(user models.User) (uint64, error) {
+func (repository users) Create(user models.User) (uint64, error) {
 	statement, erro := repository.db.Prepare(
 		"INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
 	)
