@@ -43,5 +43,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		messages.Erro(w, http.StatusUnauthorized, erro)
 		return
 	}
-	w.Write([]byte("Você está logado"))
+	token, _ := config.CreateToken(uint64(userSaved.ID))
+	w.Write([]byte(token))
 }
