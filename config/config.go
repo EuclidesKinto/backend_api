@@ -15,6 +15,9 @@ var (
 
 	// Porta onde a API vai estar rodando
 	Port = 0
+
+	//é a chave que será usada para criptografar o token
+	SecretKey []byte
 )
 
 // init variables for the application
@@ -34,4 +37,5 @@ func LoadConfig() {
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_NAME"),
 	)
+	SecretKey = []byte(os.Getenv("SECRET_KEY"))
 }
