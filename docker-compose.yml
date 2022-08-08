@@ -2,18 +2,41 @@ version: '3.8'
 services:
   db:
     image: mysql:8.0
-    container_name:  db
+    container_name: db
     cap_add:
       - SYS_NICE
     restart: always
     environment:
-      - MYSQL_ROOT_USER=root
-      - MYSQL_ROOT_PASSWORD=password
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
     ports:
       - '3306:3306'
     volumes:
       - db:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - sail
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
+      retries: 3
+      timeout: 5s
+  phpmyadmin:
+    image: 'phpmyadmin:latest'
+    ports:
+      - 8081:80
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+    depends_on:
+      - db
+    networks:
+      - sail
+networks:
+  sail:
+    driver: bridge
 volumes:
   db:
     driver: local
