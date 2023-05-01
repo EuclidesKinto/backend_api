@@ -19,7 +19,7 @@ services:
       - db:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - sail
+      - go_net
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
       retries: 3
@@ -33,9 +33,9 @@ services:
     depends_on:
       - db
     networks:
-      - sail
+      - go_net
 networks:
-  sail:
+  go_net:
     driver: bridge
 volumes:
   db:
